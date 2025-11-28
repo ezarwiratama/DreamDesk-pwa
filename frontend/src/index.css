@@ -4,124 +4,30 @@
   --text: #333333;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  -webkit-tap-highlight-color: transparent; /* Hilangkan highlight biru di mobile */
-}
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+body { background-color: var(--bg); color: var(--text); padding-bottom: 100px; }
 
-body {
-  background-color: var(--bg);
-  color: var(--text);
-  padding-bottom: 80px; /* Space untuk bottom nav */
-}
+/* Hide Scrollbar */
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* Utility untuk menyembunyikan scrollbar tapi tetap bisa scroll */
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.hide-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
+/* Page Container Utility */
+.page-container { max-width: 600px; margin: 0 auto; background: #f8f9fa; min-height: 100vh; }
 
-/* Bottom Navigation Styles */
+/* --- FLOATING NAVBAR --- */
 .bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: white;
-  height: 70px;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
-  z-index: 1000;
-  padding-bottom: 5px;
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  width: 90%; max-width: 400px; height: 65px;
+  background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
+  display: flex; justify-content: space-around; align-items: center;
+  border-radius: 35px; box-shadow: 0 10px 25px rgba(128, 0, 0, 0.15); z-index: 1000; padding: 0 10px;
 }
-
 .nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  color: #ccc;
-  width: 50px;
-  transition: 0.3s;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-decoration: none; color: #ccc; width: 50px; height: 50px; border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-
 .nav-item.active {
-  color: var(--primary);
-  transform: translateY(-5px);
-}
-
-.nav-item .dot {
-  width: 5px;
-  height: 5px;
-  background-color: var(--primary);
-  border-radius: 50%;
-  margin-top: 5px;
-}
-
-/* --- FLOATING NAVBAR STYLES --- */
-.bottom-nav {
-  position: fixed;
-  bottom: 20px;          /* Jarak dari paling bawah (efek melayang) */
-  left: 50%;             /* Mulai posisi dari tengah layar */
-  transform: translateX(-50%); /* Geser ke kiri 50% agar benar-benar di tengah */
-  
-  width: 90%;            /* Lebar tidak full, tapi 90% dari layar */
-  max-width: 400px;      /* Batas lebar maksimal agar tidak aneh di tablet/desktop */
-  height: 65px;
-  
-  background: rgba(255, 255, 255, 0.95); /* Sedikit transparan */
-  backdrop-filter: blur(10px);           /* Efek blur di belakang navbar (Glassmorphism) */
-  
-  display: flex;
-  justify-content: space-around; /* Jarak antar icon merata */
-  align-items: center;
-  
-  border-radius: 35px;   /* Membuat sudut sangat bulat (seperti kapsul) */
-  box-shadow: 0 10px 25px rgba(128, 0, 0, 0.15); /* Shadow halus warna maroon pudar */
-  z-index: 1000;
-  padding: 0 10px;
-}
-
-/* Style Item Navigasi */
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  color: #ccc;           /* Warna icon saat tidak aktif (abu-abu) */
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Efek animasi membal */
-  position: relative;
-}
-
-/* Style Saat Aktif */
-.nav-item.active {
-  color: #ffffff;        /* Icon jadi putih saat aktif */
-  background-color: var(--primary); /* Latar belakang bulat merah maroon */
-  transform: translateY(-15px); /* Icon naik ke atas keluar dari baris */
-  box-shadow: 0 5px 15px rgba(128, 0, 0, 0.4); /* Shadow pada tombol aktif */
-}
-
-/* Titik Indikator (Opsional, bisa dihapus jika pakai style naik ke atas) */
-.nav-item .dot {
-  display: none; /* Kita sembunyikan dot karena sudah pakai efek naik */
-}
-
-/* Penyesuaian Body agar konten paling bawah tidak tertutup navbar */
-body {
-  padding-bottom: 100px; 
+  color: #ffffff; background-color: var(--primary); transform: translateY(-15px);
+  box-shadow: 0 5px 15px rgba(128, 0, 0, 0.4);
 }
