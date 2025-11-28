@@ -10,6 +10,10 @@ const HomePage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
+  // --- BASE URL LOGIC ---
+  // Jika ada env variable VITE_API_URL, pakai itu. Jika tidak, pakai string kosong (relative path)
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "";
+
   const categories = [
     { name: "All", icon: <Grid size={16} /> },
     { name: "Monitor", icon: <Monitor size={16} /> },
@@ -19,14 +23,23 @@ const HomePage = () => {
   ];
 
   useEffect(() => {
-    // Gunakan relative path /api
-    fetch('/api/products')
-      .then(res => res.json())
+    // Tambahkan API_BASE_URL di depan endpoint
+    fetch(`${API_BASE_URL}/api/products`)
+      .then(res => {
+        if (!res.ok) throw new Error("Gagal fetch data");
+        return res.json();
+      })
       .then(data => {
-        setFeaturedProducts(data.slice(0, 4));
+        // Pastikan data ada sebelum di-slice
+        if (Array.isArray(data)) {
+            setFeaturedProducts(data.slice(0, 4));
+        }
         setIsLoading(false);
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+          console.error(err);
+          setIsLoading(false);
+      });
       
     // Load Wishlist
     const loadWishlist = () => setWishlist(JSON.parse(localStorage.getItem("wishlist") || "[]"));
@@ -80,7 +93,7 @@ const HomePage = () => {
       {/* Featured List */}
       <div style={{ padding: "20px" }}>
         <h3 style={{ fontSize: "1.1rem", fontWeight: "bold", marginBottom: "15px" }}>Featured Setups</h3>
-        {isLoading ? <p>Loading...</p> : (
+        {isLoading ? <p style={{textAlign:'center', color: '#888'}}>Loading data from server...</p> : (
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
             {featuredProducts.map((item) => {
               const isLiked = wishlist.some(w => w.id === item.id);
