@@ -88,7 +88,7 @@ const HomePage = () => {
       <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 20px 10px" }}>
         <div>
           <h1 style={{ fontSize: "1.5rem", fontWeight: "800", color: COLORS.text }}>Hello, Dreamer! 👋</h1>
-          <p style={{ color: COLORS.gray, fontSize: "0.9rem" }}>Let's build your setup.</p>
+          <p style={{ color: COLORS.gray, fontSize: "0.9rem" }}>Let's build your setup with DreamDesk.</p>
         </div>
         
         {/* Ikon Notifikasi */}
