@@ -6,26 +6,22 @@ import { COLORS } from "../utils/constants";
 const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
 
-  // Load Cart saat halaman dibuka
   useEffect(() => {
     const loadCart = () => {
       const savedCart = JSON.parse(localStorage.getItem("cart") || "[]");
       setCartItems(savedCart);
     };
     loadCart();
-    // Listener agar update realtime jika ada perubahan storage
     window.addEventListener("storage", loadCart);
     return () => window.removeEventListener("storage", loadCart);
   }, []);
 
-  // Update Cart ke LocalStorage
   const updateCart = (newCart) => {
     setCartItems(newCart);
     localStorage.setItem("cart", JSON.stringify(newCart));
     window.dispatchEvent(new Event("storage"));
   };
 
-  // Tambah Quantity
   const increaseQty = (id) => {
     const newCart = cartItems.map((item) =>
       item.id === id ? { ...item, quantity: (item.quantity || 1) + 1 } : item
@@ -33,7 +29,6 @@ const CartPage = () => {
     updateCart(newCart);
   };
 
-  // Kurang Quantity
   const decreaseQty = (id) => {
     const newCart = cartItems.map((item) => {
       if (item.id === id) {
@@ -44,13 +39,11 @@ const CartPage = () => {
     updateCart(newCart);
   };
 
-  // Hapus Item
   const removeItem = (id) => {
     const newCart = cartItems.filter((item) => item.id !== id);
     updateCart(newCart);
   };
 
-  // Hitung Total Harga
   const totalPrice = cartItems.reduce((total, item) => total + (item.price * (item.quantity || 1)), 0);
 
   // -- RENDER EMPTY STATE --
@@ -66,14 +59,13 @@ const CartPage = () => {
 
   // -- RENDER CART LIST --
   return (
-    <div className="page-container" style={{ paddingBottom: '160px' }}> {/* Padding bawah besar agar tidak ketutup total & navbar */}
+    <div className="page-container" style={{ paddingBottom: '160px' }}>
       <div style={{ padding: "20px" }}>
         <h2 style={{ color: COLORS.primary, fontWeight: "bold", marginBottom: "20px" }}>My Cart</h2>
         
         <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
           {cartItems.map((item) => (
             <div key={item.id} style={{ display: "flex", background: "white", borderRadius: "15px", padding: "10px", boxShadow: "0 2px 5px rgba(0,0,0,0.05)", position: "relative" }}>
-              {/* Gambar Produk */}
               <img src={item.image_url} alt={item.name} style={{ width: "80px", height: "80px", borderRadius: "10px", objectFit: "cover" }} />
               
               {/* Info Produk */}

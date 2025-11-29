@@ -6,9 +6,6 @@ const { createClient } = require('@supabase/supabase-js');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// --- 1. CORS CONFIGURATION (PENTING) ---
-// Karena Frontend dan Backend nanti beda domain (beda link vercel),
-// kita harus izinkan akses dari mana saja ('*') atau spesifik domain frontend.
 app.use(cors({
     origin: '*', 
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -17,13 +14,8 @@ app.use(cors({
 
 app.use(express.json());
 
-// --- 2. SUPABASE CONNECTION ---
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-// --- 3. ROUTES ---
-
-// Route Cek Server (Health Check)
-// Akses ini di browser nanti untuk memastikan server hidup
 app.get('/', (req, res) => {
     res.json({ status: 'Success', message: 'DreamDesk Backend is Running!' });
 });
@@ -34,7 +26,7 @@ app.get('/api/products', async (req, res) => {
         const { data, error } = await supabase
             .from('products')
             .select('*')
-            .order('id', { ascending: true }); // Urutkan biar rapi
+            .order('id', { ascending: true });
 
         if (error) throw error;
         res.json(data);
@@ -60,14 +52,10 @@ app.get('/api/products/:id', async (req, res) => {
     }
 });
 
-// --- 4. SERVER LISTENER ---
-// Logika: Kalau di laptop (development), jalankan app.listen.
-// Kalau di Vercel (production), export app biar Vercel yang handle serverless-nya.
 if (process.env.NODE_ENV !== 'production') {
     app.listen(port, () => {
         console.log(`Server running locally on http://localhost:${port}`);
     });
 }
 
-// WAJIB: Export app untuk Vercel Serverless Function
 module.exports = app;

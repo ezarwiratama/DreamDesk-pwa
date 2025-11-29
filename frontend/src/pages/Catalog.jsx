@@ -59,13 +59,8 @@ const CatalogPage = () => {
 
   // --- LOGIKA FILTER UTAMA ---
   const filteredProducts = products.filter((item) => {
-    // 1. Cek apakah nama sesuai keyword pencarian
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    // 2. Cek apakah kategori sesuai (Jika "All", loloskan semua)
     const matchesCategory = activeCategory === "All" || item.category === activeCategory;
-
-    // Item harus lolos KEDUA syarat
     return matchesSearch && matchesCategory;
   });
 

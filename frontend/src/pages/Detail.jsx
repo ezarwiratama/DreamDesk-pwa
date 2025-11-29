@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ChevronLeft, Heart, ShoppingCart } from "lucide-react"; // Tambah icon ShoppingCart
+import { ChevronLeft, Heart, ShoppingCart } from "lucide-react";
 import { COLORS } from "../utils/constants";
 
 const DetailPage = () => {
@@ -45,27 +45,19 @@ const DetailPage = () => {
   // --- FUNGSI ADD TO CART BARU ---
   const addToCart = () => {
     if (!product) return;
-
-    // 1. Ambil cart lama
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-    
-    // 2. Cek apakah barang sudah ada?
     const existingItem = cart.find((item) => item.id === product.id);
 
     if (existingItem) {
-      // Jika ada, tambah quantity
       existingItem.quantity += 1;
     } else {
-      // Jika belum, masukkan produk baru dengan quantity 1
       cart.push({ ...product, quantity: 1 });
     }
 
-    // 3. Simpan balik ke LocalStorage
     localStorage.setItem("cart", JSON.stringify(cart));
     
-    // 4. Feedback ke user
     alert("Berhasil masuk keranjang! 🛒");
-    window.dispatchEvent(new Event("storage")); // Update state global
+    window.dispatchEvent(new Event("storage"));
   };
 
   if (!product) return <div style={{ padding: 20, textAlign: 'center', marginTop: 50 }}>Loading details...</div>;

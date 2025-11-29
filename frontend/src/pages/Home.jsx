@@ -5,11 +5,9 @@ import { COLORS } from "../utils/constants";
 
 const HomePage = () => {
   const [activeCategory, setActiveCategory] = useState("All");
-  const [products, setProducts] = useState([]); // Simpan SEMUA produk di sini dulu
+  const [products, setProducts] = useState([]);
   const [wishlist, setWishlist] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  
-  // 1. State Search
   const [searchTerm, setSearchTerm] = useState("");
   
   const navigate = useNavigate();
@@ -40,7 +38,6 @@ const HomePage = () => {
         return res.json();
       })
       .then((data) => {
-        // Simpan semua data, jangan di-slice dulu
         if (Array.isArray(data)) {
           setProducts(data);
         }
@@ -68,23 +65,16 @@ const HomePage = () => {
   };
 
   // --- LOGIKA FILTER & DISPLAY ---
-  
-  // 2. Cek apakah user sedang melakukan filter/search
   const isFiltering = searchTerm !== "" || activeCategory !== "All";
 
-  // 3. Filter produk berdasarkan Search Term DAN Kategori
   const filteredProducts = products.filter((item) => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = activeCategory === "All" || item.category === activeCategory;
     return matchesSearch && matchesCategory;
   });
 
-  // 4. Tentukan produk mana yang ditampilkan
-  // Jika sedang filter: Tampilkan hasil filter (bisa banyak)
-  // Jika default: Tampilkan 4 produk saja (Featured)
   const displayProducts = isFiltering ? filteredProducts : products.slice(0, 4);
 
-  // 5. Tentukan Judul Section secara Dinamis
   let sectionTitle = "Featured Setups";
   if (searchTerm) {
     sectionTitle = `Result for "${searchTerm}"`;
@@ -141,7 +131,7 @@ const HomePage = () => {
           
           {/* FUNGSI NAVIGASI DITAMBAHKAN DI SINI */}
           <button 
-            onClick={() => navigate('/catalog')} // Arahkan ke halaman Catalog
+            onClick={() => navigate('/catalog')}
             style={{ backgroundColor: COLORS.orange, color: "white", border: "none", padding: "10px 20px", borderRadius: "20px", fontWeight: "bold", marginTop: "15px", fontSize: "0.85rem", cursor: "pointer" }}
           >
             Buy Now
@@ -178,7 +168,6 @@ const HomePage = () => {
 
       {/* Product List Section */}
       <div style={{ padding: "20px" }}>
-        {/* JUDUL DINAMIS */}
         <h3 style={{ fontSize: "1.1rem", fontWeight: "bold", marginBottom: "15px" }}>
             {sectionTitle}
         </h3>
