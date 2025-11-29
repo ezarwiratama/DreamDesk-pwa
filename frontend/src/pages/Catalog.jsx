@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-// Tambahkan import icon kategori agar tampilan lebih menarik
 import { Heart, Search, X, Grid, Monitor, Keyboard, Mouse, Armchair, Headphones } from "lucide-react"; 
 import { COLORS } from "../utils/constants";
 
@@ -10,7 +9,7 @@ const CatalogPage = () => {
   
   // State untuk Search & Filter
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeCategory, setActiveCategory] = useState("All"); // Default: Tampilkan semua
+  const [activeCategory, setActiveCategory] = useState("All");
   
   const navigate = useNavigate();
   const API_BASE_URL = import.meta.env.VITE_API_URL || "";
