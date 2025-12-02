@@ -1,42 +1,188 @@
-#root {
-  max-width: 1280px;
+:root {
+  --primary-color: #800000; /* Merah DreamDesk */
+  --bg-color: #f8f9fa;
+  --text-color: #333;
+  --sidebar-width: 260px;   /* Lebar Sidebar Desktop */
+  --nav-mobile-height: 70px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  
+  /* MOBILE DEFAULT: Padding bawah agar konten tidak tertutup nav */
+  padding-bottom: calc(var(--nav-mobile-height) + 20px);
+}
+
+/* Container Konten Utama */
+.page-container {
+  max-width: 100%;
+  padding: 0;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* === UTILS === */
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* === NAVIGASI DEFAULT (MOBILE - BOTTOM BAR) === */
+.navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-mobile-height);
+  background: white;
+  display: flex;
+  flex-direction: row; /* Berjejer ke samping */
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+  z-index: 1000;
+  padding: 0 10px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+/* LOGO MOBILE: Sembunyikan Logo di HP */
+.logo-container {
+  display: none;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #aaa;
+  text-decoration: none;
+  padding: 8px;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+/* Teks Label (Default HP: Sembunyi) */
+.nav-label {
+  display: none; 
+  font-size: 0.75rem;
+  margin-top: 4px;
+}
+
+/* Dot Indikator (Hanya di HP) */
+.dot {
+  width: 5px;
+  height: 5px;
+  background-color: var(--primary-color);
+  border-radius: 50%;
+  margin-top: 4px;
+}
+
+.nav-item.active {
+  color: var(--primary-color);
+}
+
+/* GRID SYSTEM */
+.responsive-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 Kolom di HP */
+  gap: 15px;
+}
+
+/* ====================================================
+   DESKTOP VIEW (SIDEBAR MODE) - Layar > 1024px
+   ==================================================== */
+@media (min-width: 1024px) {
+  
+  body {
+    padding-bottom: 0; /* Hapus padding bawah */
+    padding-left: var(--sidebar-width); /* GESER KONTEN KE KANAN */
   }
-  to {
-    transform: rotate(360deg);
+
+  /* Ubah Navigasi jadi SIDEBAR */
+  .navigation {
+    top: 0;
+    left: 0;
+    bottom: 0; /* Full height */
+    width: var(--sidebar-width);
+    height: 100vh;
+    
+    flex-direction: column; /* Berjejer ke bawah (Vertikal) */
+    justify-content: flex-start; /* Mulai dari atas */
+    align-items: flex-start; /* Rata kiri */
+    
+    padding: 0 20px; /* Padding kiri kanan sidebar */
+    padding-top: 30px;
+    border-radius: 0;
+    border-right: 1px solid #eee;
+    box-shadow: none;
   }
-}
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+  /* LOGO DESKTOP: Munculkan Logo */
+  .logo-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 40px; /* Jarak antara logo dan tombol Home */
   }
-}
 
-.card {
-  padding: 2em;
-}
+  .sidebar-logo {
+    width: 180px;      /* Atur ukuran logo disini */
+    height: auto;
+    margin-top: 2vh;
+    margin-bottom: 2vh;
+    object-fit: contain;
+  }
 
-.read-the-docs {
-  color: #888;
+  /* Item di Sidebar */
+  .nav-item {
+    flex-direction: row; /* Icon sebelah kiri teks */
+    align-items: center;
+    justify-content: flex-start;
+    padding: 12px 20px;
+    margin-bottom: 8px;
+    border-radius: 12px;
+    gap: 15px;
+  }
+
+  /* Teks Muncul di Sidebar */
+  .nav-label {
+    display: block;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 0;
+  }
+
+  .dot {
+    display: none;
+  }
+
+  /* Hover Effect Desktop */
+  .nav-item:hover {
+    background-color: #fff0f0;
+    color: var(--primary-color);
+  }
+
+  .nav-item.active {
+    background-color: var(--primary-color);
+    color: white !important;
+    box-shadow: 0 5px 15px rgba(211, 47, 47, 0.3);
+  }
+
+  /* Grid Produk Lebih Lebar */
+  .page-container {
+    max-width: 1400px;
+    padding: 30px;
+  }
+
+  .responsive-grid {
+    grid-template-columns: repeat(4, 1fr); /* 4 Kolom di Desktop */
+    gap: 25px;
+  }
 }
