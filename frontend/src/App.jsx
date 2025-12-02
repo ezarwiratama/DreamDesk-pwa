@@ -17,7 +17,8 @@ function App() {
         <Route path="/wishlist" element={<><WishlistPage /><Navbar /></>} />
         <Route path="/cart" element={<><CartPage /><Navbar /></>} />
         <Route path="/profile" element={<><ProfilePage /><Navbar /></>} />
-        <Route path="/product/:id" element={<DetailPage />} />
+        {/* <Route path="/product/:id" element={<DetailPage />} /> */}
+        <Route path="/product/:id" element={<><DetailPage /><Navbar /></>} />
       </Routes>
     </BrowserRouter>
   );

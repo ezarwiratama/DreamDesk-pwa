@@ -49,7 +49,7 @@ const CartPage = () => {
   // -- RENDER EMPTY STATE --
   if (cartItems.length === 0) {
     return (
-      <div className="page-container" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "80vh" }}>
+      <div className="page-container" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "70vh" }}>
         <ShoppingCart size={64} color={COLORS.gray} style={{ marginBottom: "20px", opacity: 0.3 }} />
         <h3 style={{ color: COLORS.gray }}>Your Cart is Empty</h3>
         <Link to="/catalog" style={{ marginTop: "20px", color: COLORS.primary, fontWeight: "bold" }}>Start Shopping</Link>
@@ -59,60 +59,60 @@ const CartPage = () => {
 
   // -- RENDER CART LIST --
   return (
-    <div className="page-container" style={{ paddingBottom: '160px' }}>
+    <div className="page-container">
       <div style={{ padding: "20px" }}>
         <h2 style={{ color: COLORS.primary, fontWeight: "bold", marginBottom: "20px" }}>My Cart</h2>
         
-        <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-          {cartItems.map((item) => (
-            <div key={item.id} style={{ display: "flex", background: "white", borderRadius: "15px", padding: "10px", boxShadow: "0 2px 5px rgba(0,0,0,0.05)", position: "relative" }}>
-              <img src={item.image_url} alt={item.name} style={{ width: "80px", height: "80px", borderRadius: "10px", objectFit: "cover" }} />
-              
-              {/* Info Produk */}
-              <div style={{ marginLeft: "15px", flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <div>
-                    <div style={{ fontWeight: "bold", fontSize: "0.95rem", paddingRight: '30px' }}>{item.name}</div>
-                    <div style={{ color: COLORS.primary, fontWeight: "bold", fontSize: "0.9rem" }}>Rp {item.price.toLocaleString()}</div>
+        {/* CONTAINER UTAMA DENGAN GRID SYSTEM */}
+        <div className="cart-layout">
+          
+          {/* KOLOM KIRI: ITEM LIST */}
+          <div className="cart-items">
+            {cartItems.map((item) => (
+              <div key={item.id} style={{ display: "flex", background: "white", borderRadius: "15px", padding: "15px", boxShadow: "0 2px 5px rgba(0,0,0,0.05)", position: "relative" }}>
+                <img src={item.image_url} alt={item.name} style={{ width: "90px", height: "90px", borderRadius: "10px", objectFit: "cover" }} />
+                
+                <div style={{ marginLeft: "20px", flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <div>
+                    <div style={{ fontWeight: "bold", fontSize: "1rem", paddingRight: '30px' }}>{item.name}</div>
+                    <div style={{ color: COLORS.primary, fontWeight: "bold", fontSize: "0.95rem", marginTop: '5px' }}>Rp {item.price.toLocaleString()}</div>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginTop: '10px' }}>
+                    <button onClick={() => decreaseQty(item.id)} style={{ width: '28px', height: '28px', borderRadius: '50%', border: '1px solid #ddd', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                      <Minus size={16} />
+                    </button>
+                    <span style={{ fontSize: '1rem', fontWeight: 'bold' }}>{item.quantity || 1}</span>
+                    <button onClick={() => increaseQty(item.id)} style={{ width: '28px', height: '28px', borderRadius: '50%', border: 'none', background: COLORS.primary, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                      <Plus size={16} />
+                    </button>
+                  </div>
                 </div>
 
-                {/* Kontrol Quantity */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '5px' }}>
-                    <button onClick={() => decreaseQty(item.id)} style={{ width: '24px', height: '24px', borderRadius: '50%', border: '1px solid #ddd', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-                        <Minus size={14} />
-                    </button>
-                    <span style={{ fontSize: '0.9rem', fontWeight: 'bold' }}>{item.quantity || 1}</span>
-                    <button onClick={() => increaseQty(item.id)} style={{ width: '24px', height: '24px', borderRadius: '50%', border: 'none', background: COLORS.primary, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-                        <Plus size={14} />
-                    </button>
-                </div>
+                <button 
+                  onClick={() => removeItem(item.id)} 
+                  style={{ position: 'absolute', top: '15px', right: '15px', border: 'none', background: 'none', color: '#ff6b6b', cursor: 'pointer' }}
+                >
+                  <Trash2 size={20} />
+                </button>
               </div>
-
-              {/* Tombol Hapus (Pojok Kanan Atas) */}
-              <button 
-                onClick={() => removeItem(item.id)} 
-                style={{ position: 'absolute', top: '10px', right: '10px', border: 'none', background: 'none', color: '#ff6b6b', cursor: 'pointer' }}
-              >
-                <Trash2 size={18} />
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Bagian Total & Checkout (Floating di atas Navbar) */}
-      <div style={{ 
-          position: 'fixed', bottom: '80px', left: '50%', transform: 'translateX(-50%)', 
-          width: '90%', maxWidth: '400px', background: 'white', padding: '15px 20px', 
-          borderRadius: '20px', boxShadow: '0 -5px 20px rgba(0,0,0,0.1)', display: 'flex', 
-          justifyContent: 'space-between', alignItems: 'center', zIndex: 900 , marginBottom: '20px'
-      }}>
-          <div>
-              <div style={{ fontSize: '0.8rem', color: COLORS.gray }}>Total Price</div>
-              <div style={{ fontSize: '1.1rem', fontWeight: 'bold', color: COLORS.primary }}>Rp {totalPrice.toLocaleString()}</div>
+            ))}
           </div>
-          <button style={{ background: COLORS.primary, color: 'white', padding: '10px 25px', borderRadius: '15px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>
+
+          {/* KOLOM KANAN / FLOATING BOTTOM: SUMMARY */}
+          <div className="cart-summary">
+            <div>
+              <span style={{ fontSize: '0.9rem', color: '#888' }}>Total Price</span>
+              <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: COLORS.primary }}>
+                Rp {totalPrice.toLocaleString()}
+              </span>
+            </div>
+            <button style={{ background: COLORS.primary, color: 'white', padding: '12px 25px', borderRadius: '12px', border: 'none', fontWeight: 'bold', cursor: 'pointer', transition: '0.2s' }}>
               Checkout
-          </button>
+            </button>
+          </div>
+
+        </div>
       </div>
     </div>
   );

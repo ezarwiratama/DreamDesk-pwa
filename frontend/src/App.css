@@ -18,7 +18,7 @@ body {
   color: var(--text-color);
   
   /* MOBILE DEFAULT: Padding bawah agar konten tidak tertutup nav */
-  padding-bottom: calc(var(--nav-mobile-height) + 20px);
+  padding-bottom: calc(var(--nav-mobile-height) + 40px);
 }
 
 /* Container Konten Utama */
@@ -32,23 +32,22 @@ body {
 .hide-scrollbar::-webkit-scrollbar { display: none; }
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* === NAVIGASI DEFAULT (MOBILE - BOTTOM BAR) === */
+/* === NAVIGASI DEFAULT (MOBILE - FLOATING BAR) === */
 .navigation {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  bottom: 20px; 
+  left: 20px;
+  right: 20px;
   height: var(--nav-mobile-height);
   background: white;
   display: flex;
-  flex-direction: row; /* Berjejer ke samping */
-  justify-content: space-around;
+  flex-direction: row; 
+  justify-content: space-around; /* Jarak antar icon merata */
   align-items: center;
-  box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
   z-index: 1000;
   padding: 0 10px;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
+  border-radius: 50px; /* Bentuk Kapsul untuk Container Nav */
 }
 
 /* LOGO MOBILE: Sembunyikan Logo di HP */
@@ -56,6 +55,7 @@ body {
   display: none;
 }
 
+/* === ITEM NAVIGASI (MOBILE) === */
 .nav-item {
   display: flex;
   flex-direction: column;
@@ -63,9 +63,14 @@ body {
   justify-content: center;
   color: #aaa;
   text-decoration: none;
-  padding: 8px;
-  transition: all 0.3s ease;
-  width: 100%;
+  
+  /* Bentuk Bulat */
+  width: 50px;  
+  height: 50px; 
+  padding: 0;   
+  border-radius: 50%; 
+  
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 /* Teks Label (Default HP: Sembunyi) */
@@ -75,17 +80,16 @@ body {
   margin-top: 4px;
 }
 
-/* Dot Indikator (Hanya di HP) */
 .dot {
-  width: 5px;
-  height: 5px;
-  background-color: var(--primary-color);
-  border-radius: 50%;
-  margin-top: 4px;
+  display: none;
 }
 
+/* === ACTIVE STATE (MOBILE) === */
 .nav-item.active {
-  color: var(--primary-color);
+  background-color: var(--primary-color);
+  color: white !important; 
+  transform: translateY(-5px); 
+  box-shadow: 0 5px 10px rgba(128, 0, 0, 0.3);
 }
 
 /* GRID SYSTEM */
@@ -101,7 +105,7 @@ body {
 @media (min-width: 1024px) {
   
   body {
-    padding-bottom: 0; /* Hapus padding bawah */
+    padding-bottom: 0; 
     padding-left: var(--sidebar-width); /* GESER KONTEN KE KANAN */
   }
 
@@ -109,49 +113,56 @@ body {
   .navigation {
     top: 0;
     left: 0;
-    bottom: 0; /* Full height */
+    bottom: 0; 
+    right: auto; 
+    
     width: var(--sidebar-width);
     height: 100vh;
     
-    flex-direction: column; /* Berjejer ke bawah (Vertikal) */
-    justify-content: flex-start; /* Mulai dari atas */
-    align-items: flex-start; /* Rata kiri */
+    flex-direction: column; 
+    justify-content: flex-start; 
+    align-items: flex-start; 
     
-    padding: 0 20px; /* Padding kiri kanan sidebar */
+    padding: 0 20px; 
     padding-top: 30px;
-    border-radius: 0;
+    
+    border-radius: 0; 
     border-right: 1px solid #eee;
     box-shadow: none;
   }
 
-  /* LOGO DESKTOP: Munculkan Logo */
+  /* LOGO DESKTOP */
   .logo-container {
     display: flex;
     justify-content: center;
     width: 100%;
-    margin-bottom: 40px; /* Jarak antara logo dan tombol Home */
+    margin-bottom: 40px; 
   }
 
   .sidebar-logo {
-    width: 180px;      /* Atur ukuran logo disini */
+    width: 180px;      
     height: auto;
     margin-top: 2vh;
     margin-bottom: 2vh;
     object-fit: contain;
   }
 
-  /* Item di Sidebar */
+  /* RESET ITEM NAVIGASI UNTUK DESKTOP */
   .nav-item {
-    flex-direction: row; /* Icon sebelah kiri teks */
+    flex-direction: row; 
     align-items: center;
     justify-content: flex-start;
-    padding: 12px 20px;
+    
+    width: 100%;  
+    height: auto; 
+    padding: 12px 20px; 
+    border-radius: 12px; 
+    
     margin-bottom: 8px;
-    border-radius: 12px;
     gap: 15px;
+    transform: none; 
   }
 
-  /* Teks Muncul di Sidebar */
   .nav-label {
     display: block;
     font-size: 1rem;
@@ -159,11 +170,6 @@ body {
     margin-top: 0;
   }
 
-  .dot {
-    display: none;
-  }
-
-  /* Hover Effect Desktop */
   .nav-item:hover {
     background-color: #fff0f0;
     color: var(--primary-color);
@@ -172,17 +178,168 @@ body {
   .nav-item.active {
     background-color: var(--primary-color);
     color: white !important;
+    transform: none;
     box-shadow: 0 5px 15px rgba(211, 47, 47, 0.3);
   }
 
-  /* Grid Produk Lebih Lebar */
   .page-container {
     max-width: 1400px;
     padding: 30px;
   }
 
   .responsive-grid {
-    grid-template-columns: repeat(4, 1fr); /* 4 Kolom di Desktop */
+    grid-template-columns: repeat(4, 1fr); 
     gap: 25px;
+  }
+}
+
+/* =========================================
+   STYLE KHUSUS CART PAGE
+   ========================================= */
+
+/* --- MOBILE DEFAULT (Floating Bottom Bar) --- */
+.cart-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-bottom: 120px; 
+}
+
+.cart-items {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.cart-summary {
+  position: fixed;
+  bottom: 110px; 
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 400px;
+  background: white;
+  padding: 15px 20px;
+  border-radius: 20px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 900;
+  border: 1px solid #f0f0f0;
+}
+
+/* === PERBAIKAN: SUSUN TEKS ATAS-BAWAH DI MOBILE === */
+.cart-summary > div {
+  display: flex;
+  flex-direction: column; /* Ini membuat Total Price dan Rp... jadi atas bawah */
+  align-items: flex-start;
+  gap: 2px;
+}
+
+/* --- DESKTOP VIEW (Side-by-Side Layout) --- */
+@media (min-width: 1024px) {
+  .cart-layout {
+    display: grid;
+    grid-template-columns: 1fr 350px; 
+    gap: 30px;
+    align-items: start; 
+    padding-bottom: 20px;
+  }
+
+  .cart-summary {
+    position: sticky; 
+    top: 20px;        
+    bottom: auto;
+    left: auto;
+    transform: none;
+    width: 100%;
+    max-width: 100%;
+    flex-direction: column; 
+    gap: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    z-index: 10;
+  }
+  
+  .cart-summary > div {
+    width: 100%;
+    display: flex;
+    /* PENTING: Kembalikan ke samping (row) saat di desktop */
+    flex-direction: row; 
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+  }
+  
+  .cart-summary button {
+    width: 100%; 
+    padding: 15px !important;
+    font-size: 1rem;
+  }
+}
+
+/* =========================================
+   STYLE KHUSUS DETAIL PAGE
+   ========================================= */
+
+/* Default Mobile: Gambar Full Width */
+.detail-layout {
+  display: flex;
+  flex-direction: column;
+  background: white;
+  min-height: 100vh;
+}
+
+.detail-image-container {
+  position: relative;
+  width: 100%;
+}
+
+.detail-image {
+  width: 100%;
+  height: 350px;
+  object-fit: cover;
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+}
+
+.detail-info {
+  padding: 25px;
+}
+
+/* --- DESKTOP VIEW (Side-by-Side) --- */
+@media (min-width: 1024px) {
+  .detail-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr; 
+    gap: 40px;
+    padding: 40px;
+    background: transparent; 
+    align-items: start;
+    min-height: auto;
+  }
+
+  .detail-image-container {
+    height: 500px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  }
+
+  .detail-image {
+    height: 100%;
+    border-radius: 0; 
+  }
+
+  .detail-info {
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .detail-title {
+    font-size: 2.5rem !important;
   }
 }
