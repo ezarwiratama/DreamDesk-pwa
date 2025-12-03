@@ -64,7 +64,6 @@ const HomePage = () => {
     window.dispatchEvent(new Event("storage"));
   };
 
-  // --- LOGIKA FILTER & DISPLAY ---
   const isFiltering = searchTerm !== "" || activeCategory !== "All";
 
   const filteredProducts = products.filter((item) => {
@@ -179,8 +178,6 @@ const HomePage = () => {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
             {displayProducts.map((item) => {
               const isLiked = wishlist.some((w) => w.id === item.id);
-              
-              // --- CARD STYLE DIPERBARUI SESUAI CATALOG.JSX ---
               return (
                 <div key={item.id} style={{ background: COLORS.white, borderRadius: "15px", overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.05)", position: "relative" }}>
                     {/* Tombol Like */}
@@ -208,7 +205,7 @@ const HomePage = () => {
                                 {item.name}
                             </div>
                             
-                            {/* Wrapper Harga & Statistik (biar selalu di bawah) */}
+                            {/* Wrapper Harga & Statistik */}
                             <div style={{ display: "flex", justifyContent: "space-between" }}>
                                 {/* Harga */}
                                 <div style={{ color: COLORS.primary, fontWeight: "bold", fontSize: "0.95rem", marginBottom: "4px" }}>

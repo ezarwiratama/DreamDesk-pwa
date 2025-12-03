@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Heart, Search, X, Grid, Monitor, Keyboard, Mouse, Armchair, Headphones, Star } from "lucide-react"; 
+import { Heart, Search, X, Grid, Monitor, Keyboard, Mouse, Armchair, Headphones, Star, ChevronLeft, ChevronRight } from "lucide-react"; 
 import { COLORS } from "../utils/constants";
 
 const CatalogPage = () => {
   const [products, setProducts] = useState([]);
   const [wishlist, setWishlist] = useState([]);
-  
-  // State untuk Search & Filter
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
   
   const navigate = useNavigate();
   const API_BASE_URL = import.meta.env.VITE_API_URL || "";
 
-  // Data Kategori
   const categories = [
     { name: "All", icon: <Grid size={16} /> },
     { name: "Monitor", icon: <Monitor size={16} /> },
@@ -47,6 +46,10 @@ const CatalogPage = () => {
     return () => window.removeEventListener("storage", loadWishlist);
   }, []);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, activeCategory]);
+
   const toggleLike = (product) => {
     const saved = JSON.parse(localStorage.getItem("wishlist") || "[]");
     const exists = saved.find((item) => item.id === product.id);
@@ -62,12 +65,22 @@ const CatalogPage = () => {
     return matchesSearch && matchesCategory;
   });
 
+  const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
+  const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
+  const currentProducts = filteredProducts.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="page-container">
       <div style={{ padding: "20px" }}>
         <h2 style={{ color: COLORS.primary, fontWeight: "bold", marginBottom: "20px" }}>Explore Catalog</h2>
 
-        {/* 1. Search Bar */}
+        {/* Search Bar */}
         <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
@@ -95,7 +108,7 @@ const CatalogPage = () => {
             )}
         </div>
 
-        {/* 2. Category Tabs */}
+        {/* Category Tabs */}
         <div className="hide-scrollbar" style={{ display: "flex", overflowX: "auto", gap: "10px", paddingBottom: "5px", marginBottom: "20px" }}>
           {categories.map((cat) => {
             const isActive = activeCategory === cat.name;
@@ -120,7 +133,7 @@ const CatalogPage = () => {
           })}
         </div>
 
-        {/* 3. Product Grid */}
+        {/* Product Grid */}
         {products.length === 0 ? (
             <p style={{color: '#888', textAlign: 'center'}}>Loading catalog...</p>
         ) : filteredProducts.length === 0 ? (
@@ -134,65 +147,106 @@ const CatalogPage = () => {
                 </button>
             </div>
         ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
-            {filteredProducts.map((item) => {
-                const isLiked = wishlist.some(w => w.id === item.id);
-                return (
-                <div key={item.id} style={{ background: COLORS.white, borderRadius: "15px", overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.05)", position: "relative" }}>
-                    {/* Tombol Like */}
-                    <button onClick={(e) => { e.stopPropagation(); toggleLike(item); }} style={{ position: "absolute", top: "10px", right: "10px", background: "white", border: "none", borderRadius: "50%", padding: "6px", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", cursor: "pointer", zIndex: 2 }}>
-                       <Heart size={16} color={isLiked ? COLORS.primary : "#ccc"} fill={isLiked ? COLORS.primary : "none"} />
-                    </button>
-                    
-                    {/* Konten Kartu */}
-                    <div onClick={() => navigate(`/product/${item.id}`)} style={{ cursor: "pointer", height: "100%", display: "flex", flexDirection: "column" }}>
-                        <img src={item.image_url} alt={item.name} style={{ width: "100%", height: "140px", objectFit: "cover" }} />
+            <>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+                {currentProducts.map((item) => {
+                    const isLiked = wishlist.some(w => w.id === item.id);
+                    return (
+                    <div key={item.id} style={{ background: COLORS.white, borderRadius: "15px", overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.05)", position: "relative" }}>
+                        {/* Like Button */}
+                        <button onClick={(e) => { e.stopPropagation(); toggleLike(item); }} style={{ position: "absolute", top: "10px", right: "10px", background: "white", border: "none", borderRadius: "50%", padding: "6px", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", cursor: "pointer", zIndex: 2 }}>
+                           <Heart size={16} color={isLiked ? COLORS.primary : "#ccc"} fill={isLiked ? COLORS.primary : "none"} />
+                        </button>
                         
-                        <div style={{ padding: "12px", display: "flex", flexDirection: "column", flexGrow: 1 }}>
-                            {/* Nama Produk */}
-                            <div style={{ 
-                                fontSize: "0.9rem", 
-                                fontWeight: "bold", 
-                                marginBottom: "8px", 
-                                display: "-webkit-box",
-                                WebkitLineClamp: 2,
-                                WebkitBoxOrient: "vertical",
-                                overflow: "hidden",
-                                height: "1.6em",
-                                lineHeight: "1.3"
-                            }}>
-                                {item.name}
-                            </div>
+                        {/* Content */}
+                        <div onClick={() => navigate(`/product/${item.id}`)} style={{ cursor: "pointer", height: "100%", display: "flex", flexDirection: "column" }}>
+                            <img src={item.image_url} alt={item.name} style={{ width: "100%", height: "140px", objectFit: "cover" }} />
                             
-                            {/* Wrapper Harga & Statistik (biar selalu di bawah) */}
-                            <div style={{ display: "flex", justifyContent: "space-between" }}>
-                                {/* Harga */}
-                                <div style={{ color: COLORS.primary, fontWeight: "bold", fontSize: "0.95rem", marginBottom: "4px" }}>
-                                    {formatRupiah(item.price)}
+                            <div style={{ padding: "12px", display: "flex", flexDirection: "column", flexGrow: 1 }}>
+                                <div style={{ 
+                                    fontSize: "0.9rem", fontWeight: "bold", marginBottom: "8px", 
+                                    display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", height: "1.6em", lineHeight: "1.3" 
+                                }}>
+                                    {item.name}
                                 </div>
-                                
-                                {/* Rating & Terjual (DISINI PERUBAHANNYA) */}
-                                <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.75rem", color: "#888" }}>
-                                    {/* Bintang & Rating */}
-                                    <div style={{ display: "flex", alignItems: "center", gap: "2px" }}>
-                                        <Star size={12} fill="#fbbf24" color="#fbbf24" /> 
-                                        <span style={{ color: "#333", fontWeight: "600" }}>{item.rating || 4.5}</span>
+                                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                    <div style={{ color: COLORS.primary, fontWeight: "bold", fontSize: "0.95rem", marginBottom: "4px" }}>
+                                        {formatRupiah(item.price)}
                                     </div>
-                                    
-                                    {/* Garis Pemisah */}
-                                    <div style={{ width: "1px", height: "10px", background: "#ddd" }}></div>
-                                    
-                                    {/* Sold Count */}
-                                    <div>{item.sold_count || 0} Terjual</div>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.75rem", color: "#888" }}>
+                                        <div style={{ display: "flex", alignItems: "center", gap: "2px" }}>
+                                            <Star size={12} fill="#fbbf24" color="#fbbf24" /> 
+                                            <span style={{ color: "#333", fontWeight: "600" }}>{item.rating || 4.5}</span>
+                                        </div>
+                                        <div style={{ width: "1px", height: "10px", background: "#ddd" }}></div>
+                                        <div>{item.sold_count || 0} Terjual</div>
+                                    </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
+                    );
+                })}
                 </div>
-                );
-            })}
-            </div>
+
+                {/* PAGINATION CONTROLS */}
+                {totalPages > 1 && (
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '40px', gap: '8px' }}>
+                        
+                        {/* Previous Button */}
+                        <button 
+                            onClick={() => paginate(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            style={{ 
+                                background: 'white', border: '1px solid #eee', borderRadius: '50%', 
+                                width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                                opacity: currentPage === 1 ? 0.5 : 1,
+                                boxShadow: '0 2px 5px rgba(0,0,0,0.05)'
+                            }}
+                        >
+                            <ChevronLeft size={20} color={COLORS.text} />
+                        </button>
+
+                        {/* Page Numbers */}
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
+                            <button
+                                key={number}
+                                onClick={() => paginate(number)}
+                                style={{
+                                    width: '40px', 
+                                    height: '40px', 
+                                    borderRadius: '50%',
+                                    border: 'none',
+                                    background: currentPage === number ? COLORS.primary : 'transparent',
+                                    color: currentPage === number ? 'white' : '#888',
+                                    fontWeight: 'bold',
+                                    cursor: 'pointer',
+                                    transition: '0.2s',
+                                    fontSize: '0.9rem'
+                                }}
+                            >
+                                {number}
+                            </button>
+                        ))}
+
+                        {/* Next Button */}
+                        <button 
+                            onClick={() => paginate(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                            style={{ 
+                                background: 'white', border: '1px solid #eee', borderRadius: '50%', 
+                                width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                                opacity: currentPage === totalPages ? 0.5 : 1,
+                                boxShadow: '0 2px 5px rgba(0,0,0,0.05)'
+                            }}
+                        >
+                            <ChevronRight size={20} color={COLORS.text} />
+                        </button>
+                    </div>
+                )}
+            </>
         )}
       </div>
     </div>
