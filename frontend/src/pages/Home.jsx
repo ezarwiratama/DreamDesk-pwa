@@ -203,7 +203,7 @@ const HomePage = () => {
                   >
                     <Heart size={16} color={isLiked ? COLORS.primary : "#ccc"} fill={isLiked ? COLORS.primary : "none"} />
                   </button>
-                  <div onClick={() => navigate(`/product/${item.id}`)}>
+                  <div onClick={() => navigate(`/product/${item.id}`)} style={{padding: '12px'}}>
                     <img src={item.image_url} alt={item.name} style={{ width: "100%", height: "120px", objectFit: "cover", borderRadius: "15px", marginBottom: "10px" }} />
                     <h4
                       style={{

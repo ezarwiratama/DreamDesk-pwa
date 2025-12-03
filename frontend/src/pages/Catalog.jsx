@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Heart, Search, X, Grid, Monitor, Keyboard, Mouse, Armchair, Headphones } from "lucide-react"; 
+import { Heart, Search, X, Grid, Monitor, Keyboard, Mouse, Armchair, Headphones, Star } from "lucide-react"; 
 import { COLORS } from "../utils/constants";
 
 const CatalogPage = () => {
@@ -147,7 +147,14 @@ const CatalogPage = () => {
                     <img src={item.image_url} alt={item.name} style={{ width: "100%", height: "140px", objectFit: "cover" }} />
                     <div style={{ padding: "12px" }}>
                         <div style={{ fontSize: "0.9rem", fontWeight: "bold", marginBottom: "5px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.name}</div>
-                        <div style={{ color: COLORS.primary, fontWeight: "bold", fontSize: '0.9rem' }}>{formatRupiah(item.price)}</div>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <span style={{ color: COLORS.primary, fontWeight: "bold", fontSize: "0.85rem" }}>
+                            {formatRupiah(item.price)}
+                          </span>
+                          <div style={{ display: "flex", alignItems: "center", gap: "2px", fontSize: "0.8rem", color: "#fbbf24" }}>
+                            <Star size={12} fill="#fbbf24" /> <span>{item.rating || 4.8}</span>
+                          </div>
+                        </div>
                     </div>
                     </div>
                 </div>
