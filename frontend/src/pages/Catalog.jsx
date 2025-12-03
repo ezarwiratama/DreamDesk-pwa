@@ -14,7 +14,7 @@ const CatalogPage = () => {
   const navigate = useNavigate();
   const API_BASE_URL = import.meta.env.VITE_API_URL || "";
 
-  // Data Kategori (Pastikan nama kategori SAMA PERSIS dengan di Database Supabase)
+  // Data Kategori
   const categories = [
     { name: "All", icon: <Grid size={16} /> },
     { name: "Monitor", icon: <Monitor size={16} /> },
@@ -56,7 +56,6 @@ const CatalogPage = () => {
     window.dispatchEvent(new Event("storage"));
   };
 
-  // --- LOGIKA FILTER UTAMA ---
   const filteredProducts = products.filter((item) => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = activeCategory === "All" || item.category === activeCategory;
@@ -96,7 +95,7 @@ const CatalogPage = () => {
             )}
         </div>
 
-        {/* 2. Category Tabs (Scrollable) */}
+        {/* 2. Category Tabs */}
         <div className="hide-scrollbar" style={{ display: "flex", overflowX: "auto", gap: "10px", paddingBottom: "5px", marginBottom: "20px" }}>
           {categories.map((cat) => {
             const isActive = activeCategory === cat.name;
@@ -140,22 +139,55 @@ const CatalogPage = () => {
                 const isLiked = wishlist.some(w => w.id === item.id);
                 return (
                 <div key={item.id} style={{ background: COLORS.white, borderRadius: "15px", overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.05)", position: "relative" }}>
+                    {/* Tombol Like */}
                     <button onClick={(e) => { e.stopPropagation(); toggleLike(item); }} style={{ position: "absolute", top: "10px", right: "10px", background: "white", border: "none", borderRadius: "50%", padding: "6px", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", cursor: "pointer", zIndex: 2 }}>
-                    <Heart size={16} color={isLiked ? COLORS.primary : "#ccc"} fill={isLiked ? COLORS.primary : "none"} />
+                       <Heart size={16} color={isLiked ? COLORS.primary : "#ccc"} fill={isLiked ? COLORS.primary : "none"} />
                     </button>
-                    <div onClick={() => navigate(`/product/${item.id}`)}>
-                    <img src={item.image_url} alt={item.name} style={{ width: "100%", height: "140px", objectFit: "cover" }} />
-                    <div style={{ padding: "12px" }}>
-                        <div style={{ fontSize: "0.9rem", fontWeight: "bold", marginBottom: "5px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.name}</div>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                          <span style={{ color: COLORS.primary, fontWeight: "bold", fontSize: "0.85rem" }}>
-                            {formatRupiah(item.price)}
-                          </span>
-                          <div style={{ display: "flex", alignItems: "center", gap: "2px", fontSize: "0.8rem", color: "#fbbf24" }}>
-                            <Star size={12} fill="#fbbf24" /> <span>{item.rating || 4.8}</span>
-                          </div>
+                    
+                    {/* Konten Kartu */}
+                    <div onClick={() => navigate(`/product/${item.id}`)} style={{ cursor: "pointer", height: "100%", display: "flex", flexDirection: "column" }}>
+                        <img src={item.image_url} alt={item.name} style={{ width: "100%", height: "140px", objectFit: "cover" }} />
+                        
+                        <div style={{ padding: "12px", display: "flex", flexDirection: "column", flexGrow: 1 }}>
+                            {/* Nama Produk */}
+                            <div style={{ 
+                                fontSize: "0.9rem", 
+                                fontWeight: "bold", 
+                                marginBottom: "8px", 
+                                display: "-webkit-box",
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: "vertical",
+                                overflow: "hidden",
+                                height: "1.6em",
+                                lineHeight: "1.3"
+                            }}>
+                                {item.name}
+                            </div>
+                            
+                            {/* Wrapper Harga & Statistik (biar selalu di bawah) */}
+                            <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                {/* Harga */}
+                                <div style={{ color: COLORS.primary, fontWeight: "bold", fontSize: "0.95rem", marginBottom: "4px" }}>
+                                    {formatRupiah(item.price)}
+                                </div>
+                                
+                                {/* Rating & Terjual (DISINI PERUBAHANNYA) */}
+                                <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.75rem", color: "#888" }}>
+                                    {/* Bintang & Rating */}
+                                    <div style={{ display: "flex", alignItems: "center", gap: "2px" }}>
+                                        <Star size={12} fill="#fbbf24" color="#fbbf24" /> 
+                                        <span style={{ color: "#333", fontWeight: "600" }}>{item.rating || 4.5}</span>
+                                    </div>
+                                    
+                                    {/* Garis Pemisah */}
+                                    <div style={{ width: "1px", height: "10px", background: "#ddd" }}></div>
+                                    
+                                    {/* Sold Count */}
+                                    <div>{item.sold_count || 0} Terjual</div>
+                                </div>
+                            </div>
+
                         </div>
-                    </div>
                     </div>
                 </div>
                 );
