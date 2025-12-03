@@ -13,6 +13,10 @@ const HomePage = () => {
   const navigate = useNavigate();
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || "";
+  
+  // KONFIGURASI CACHE
+  const CACHE_KEY = "dreamdesk_products_cache";
+  const CACHE_EXPIRY_MS = 5 * 60 * 1000; // Cache berlaku selama 5 menit
 
   const formatRupiah = (number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -32,21 +36,47 @@ const HomePage = () => {
   ];
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/api/products`)
-      .then((res) => {
+    const fetchProducts = async () => {
+      // 1. CEK CACHE DULU
+      const cached = localStorage.getItem(CACHE_KEY);
+      
+      if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        const now = Date.now();
+
+        // Jika cache belum kadaluarsa (kurang dari 5 menit)
+        if (now - timestamp < CACHE_EXPIRY_MS) {
+          console.log("Memuat produk dari Cache (Hemat Data)");
+          setProducts(data);
+          setIsLoading(false);
+          return; // Stop, tidak perlu fetch ke server
+        }
+      }
+
+      // 2. JIKA CACHE KOSONG/EXPIRED, AMBIL DARI SERVER
+      console.log("Memuat produk dari Server API...");
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/products`);
         if (!res.ok) throw new Error("Gagal fetch data");
-        return res.json();
-      })
-      .then((data) => {
+        const data = await res.json();
+
         if (Array.isArray(data)) {
           setProducts(data);
+          
+          // Simpan data baru ke cache + timestamp saat ini
+          localStorage.setItem(CACHE_KEY, JSON.stringify({
+            data: data,
+            timestamp: Date.now()
+          }));
         }
-        setIsLoading(false);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error(err);
+      } finally {
         setIsLoading(false);
-      });
+      }
+    };
+
+    fetchProducts();
 
     const loadWishlist = () => setWishlist(JSON.parse(localStorage.getItem("wishlist") || "[]"));
     loadWishlist();
@@ -64,6 +94,7 @@ const HomePage = () => {
     window.dispatchEvent(new Event("storage"));
   };
 
+  // --- LOGIKA FILTER & DISPLAY ---
   const isFiltering = searchTerm !== "" || activeCategory !== "All";
 
   const filteredProducts = products.filter((item) => {
@@ -187,7 +218,7 @@ const HomePage = () => {
                     
                     {/* Konten Kartu */}
                     <div onClick={() => navigate(`/product/${item.id}`)} style={{ cursor: "pointer", height: "100%", display: "flex", flexDirection: "column" }}>
-                        <img src={item.image_url} alt={item.name} style={{ width: "100%", height: "140px", objectFit: "cover" }} />
+                        <img src={item.image_url} alt={item.name} style={{ width: "100%", height: "120px", objectFit: "cover", borderRadius: "15px", marginBottom: "10px" }} />
                         
                         <div style={{ padding: "12px", display: "flex", flexDirection: "column", flexGrow: 1 }}>
                             {/* Nama Produk */}
@@ -214,16 +245,11 @@ const HomePage = () => {
                                 
                                 {/* Rating & Terjual */}
                                 <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.75rem", color: "#888" }}>
-                                    {/* Bintang & Rating */}
                                     <div style={{ display: "flex", alignItems: "center", gap: "2px" }}>
                                         <Star size={12} fill="#fbbf24" color="#fbbf24" /> 
                                         <span style={{ color: "#333", fontWeight: "600" }}>{item.rating || 4.5}</span>
                                     </div>
-                                    
-                                    {/* Garis Pemisah */}
                                     <div style={{ width: "1px", height: "10px", background: "#ddd" }}></div>
-                                    
-                                    {/* Sold Count */}
                                     <div>{item.sold_count || 0} Terjual</div>
                                 </div>
                             </div>

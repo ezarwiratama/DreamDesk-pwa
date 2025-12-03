@@ -1,8 +1,93 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Heart, Search, X, Grid, Monitor, Keyboard, Mouse, Armchair, Headphones, Star, ChevronLeft, ChevronRight } from "lucide-react"; 
+import {
+  Heart,
+  Search,
+  X,
+  Grid,
+  Monitor,
+  Keyboard,
+  Mouse,
+  Armchair,
+  Headphones,
+  Star,
+  ChevronLeft,
+  ChevronRight,
+  Image as ImageIcon
+} from "lucide-react"; 
 import { COLORS } from "../utils/constants";
 
+// --- KOMPONEN LAZY IMAGE ---
+const LazyImage = ({ src, alt, style, className }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const imgRef = useRef();
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // Jika elemen masuk ke viewport (layar)
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect(); // Stop memantau setelah terlihat agar hemat memori
+        }
+      },
+      {
+        rootMargin: "100px", // Load gambar 100px sebelum user benar-benar scroll sampai
+        threshold: 0.1
+      }
+    );
+
+    if (imgRef.current) {
+      observer.observe(imgRef.current);
+    }
+
+    return () => {
+      if (imgRef.current) observer.unobserve(imgRef.current);
+    };
+  }, []);
+
+  return (
+    <div 
+      ref={imgRef} 
+      className={className}
+      style={{ 
+        ...style, 
+        position: 'relative', 
+        overflow: 'hidden', 
+        background: '#f0f0f0',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
+    >
+      {/* Tampilkan gambar HANYA jika isVisible (masuk viewport) */}
+      {isVisible && (
+        <img
+          src={src}
+          alt={alt}
+          onLoad={() => setIsLoaded(true)}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            opacity: isLoaded ? 1 : 0,
+            transition: "opacity 0.5s ease-in-out",
+            position: "absolute",
+            top: 0,
+            left: 0,
+          }}
+        />
+      )}
+
+      {!isLoaded && (
+        <ImageIcon size={24} color="#ccc" style={{ opacity: 0.5 }} />
+      )}
+    </div>
+  );
+};
+
+// --- HALAMAN UTAMA ---
 const CatalogPage = () => {
   const [products, setProducts] = useState([]);
   const [wishlist, setWishlist] = useState([]);
@@ -160,7 +245,13 @@ const CatalogPage = () => {
                         
                         {/* Content */}
                         <div onClick={() => navigate(`/product/${item.id}`)} style={{ cursor: "pointer", height: "100%", display: "flex", flexDirection: "column" }}>
-                            <img src={item.image_url} alt={item.name} style={{ width: "100%", height: "140px", objectFit: "cover" }} />
+                            
+                            {/* --- MENGGUNAKAN LAZY IMAGE DI SINI --- */}
+                            <LazyImage 
+                                src={item.image_url} 
+                                alt={item.name} 
+                                style={{ width: "100%", height: "140px" }} 
+                            />
                             
                             <div style={{ padding: "12px", display: "flex", flexDirection: "column", flexGrow: 1 }}>
                                 <div style={{ 
