@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ChevronLeft, Heart, ShoppingCart, Star, Store, Package } from "lucide-react"; // Icon baru ditambahkan
+import { ChevronLeft, Heart, ShoppingCart, Star, Store } from "lucide-react"; 
 import { COLORS } from "../utils/constants";
 
 const DetailPage = () => {
@@ -24,6 +24,7 @@ const DetailPage = () => {
             id: 1,
             name: "Ultrawide Monitor 34\"",
             price: 5500000,
+            discount_price: 3850000, // Contoh data diskon
             category: "Monitor",
             description: "Monitor lengkung ultra lebar untuk produktivitas.",
             image_url: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=400&q=80",
@@ -49,6 +50,7 @@ const DetailPage = () => {
     window.dispatchEvent(new Event("storage"));
   };
 
+  // --- LOGIKA ADD TO CART (UPDATED) ---
   const addToCart = () => {
     if (!product) return;
     if (product.stock <= 0) {
@@ -59,10 +61,22 @@ const DetailPage = () => {
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
     const existingItem = cart.find((item) => item.id === product.id);
 
+    // Cek apakah ada diskon, gunakan harga diskon jika ada
+    const hasDiscount = product.discount_price && product.discount_price < product.price;
+    const finalPrice = hasDiscount ? product.discount_price : product.price;
+
     if (existingItem) {
       existingItem.quantity += 1;
+      // Opsional: Update harga di cart jika harga di server berubah/diskon baru
+      existingItem.price = finalPrice; 
     } else {
-      cart.push({ ...product, quantity: 1 });
+      // Simpan produk ke cart dengan harga yang sudah didiskon
+      cart.push({ 
+          ...product, 
+          price: finalPrice, // Override harga asli dengan harga diskon agar total di Cart benar
+          original_price: product.price, // Simpan harga asli untuk referensi (opsional)
+          quantity: 1 
+      });
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
@@ -74,10 +88,14 @@ const DetailPage = () => {
   if (!product) return <div style={{ padding: 20, textAlign: 'center', marginTop: 50 }}>Loading details...</div>;
 
   const isLiked = wishlist.some((w) => w.id === product.id);
+  
+  // --- LOGIKA HITUNG DISKON ---
   const hasDiscount = product.discount_price && product.discount_price < product.price;
+  const discountPercentage = hasDiscount 
+      ? Math.round(((product.price - product.discount_price) / product.price) * 100) 
+      : 0;
 
   return (
-    // Pastikan class 'page-container' memiliki styling margin/padding yang sesuai di CSS Anda
     <div className="page-container">
       
       <div className="detail-layout">
@@ -97,6 +115,13 @@ const DetailPage = () => {
           >
             <Heart color={isLiked ? COLORS.primary : "#999"} fill={isLiked ? COLORS.primary : "none"} />
           </button>
+
+          {/* Badge Diskon di Gambar (Opsional, agar lebih menarik) */}
+          {hasDiscount && (
+            <div style={{ position: 'absolute', bottom: 20, left: 20, background: '#ef4444', color: 'white', padding: '5px 12px', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.9rem', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
+                Hemat {discountPercentage}%
+            </div>
+          )}
 
           <img src={product.image_url} alt={product.name} className="detail-image" />
         </div>
@@ -124,7 +149,7 @@ const DetailPage = () => {
             {product.name}
           </h2>
 
-          {/* Rating & Sold Count (Social Proof) */}
+          {/* Rating & Sold Count */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px', fontSize: '0.9rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <Star size={16} fill="#FFC400" color="#FFC400" /> 
@@ -137,11 +162,27 @@ const DetailPage = () => {
             </div>
           </div>
           
-          {/* Price Section */}
+          {/* --- PRICE SECTION (UPDATED) --- */}
           <div style={{ marginBottom: "25px" }}>
-             <h3 style={{ color: COLORS.primary, fontSize: "1.8rem", fontWeight: 'bold', margin: 0 }}>
-                Rp {product.price?.toLocaleString()}
-             </h3>
+             {hasDiscount ? (
+                <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '5px' }}>
+                        <span style={{ textDecoration: "line-through", color: "#999", fontSize: "1.1rem" }}>
+                            Rp {product.price?.toLocaleString()}
+                        </span>
+                        <span style={{ background: '#ffebee', color: '#d32f2f', fontSize: '0.8rem', fontWeight: 'bold', padding: '2px 8px', borderRadius: '4px' }}>
+                            {discountPercentage}% OFF
+                        </span>
+                    </div>
+                    <h3 style={{ color: COLORS.primary, fontSize: "2rem", fontWeight: '800', margin: 0 }}>
+                        Rp {product.discount_price?.toLocaleString()}
+                    </h3>
+                </div>
+             ) : (
+                <h3 style={{ color: COLORS.primary, fontSize: "2rem", fontWeight: 'bold', margin: 0 }}>
+                    Rp {product.price?.toLocaleString()}
+                </h3>
+             )}
           </div>
           
           {/* Seller & Stock Info Box */}

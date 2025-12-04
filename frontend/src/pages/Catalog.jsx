@@ -26,14 +26,13 @@ const LazyImage = ({ src, alt, style, className }) => {
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // Jika elemen masuk ke viewport (layar)
         if (entry.isIntersecting) {
           setIsVisible(true);
-          observer.disconnect(); // Stop memantau setelah terlihat agar hemat memori
+          observer.disconnect();
         }
       },
       {
-        rootMargin: "100px", // Load gambar 100px sebelum user benar-benar scroll sampai
+        rootMargin: "100px",
         threshold: 0.1
       }
     );
@@ -61,7 +60,6 @@ const LazyImage = ({ src, alt, style, className }) => {
         justifyContent: 'center'
       }}
     >
-      {/* Tampilkan gambar HANYA jika isVisible (masuk viewport) */}
       {isVisible && (
         <img
           src={src}
@@ -236,8 +234,35 @@ const CatalogPage = () => {
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
                 {currentProducts.map((item) => {
                     const isLiked = wishlist.some(w => w.id === item.id);
+                    
+                    // --- LOGIKA HITUNG DISKON ---
+                    const hasDiscount = item.discount_price && item.discount_price < item.price;
+                    const discountPercentage = hasDiscount 
+                        ? Math.round(((item.price - item.discount_price) / item.price) * 100) 
+                        : 0;
+
                     return (
                     <div key={item.id} style={{ background: COLORS.white, borderRadius: "15px", overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.05)", position: "relative" }}>
+                        
+                        {/* --- BADGE DISKON (NEW) --- */}
+                        {hasDiscount && (
+                            <div style={{
+                                position: 'absolute',
+                                top: '10px',
+                                left: '10px',
+                                background: '#ef4444', // Warna Merah Terang
+                                color: 'white',
+                                fontSize: '0.65rem',
+                                fontWeight: 'bold',
+                                padding: '4px 8px',
+                                borderRadius: '8px',
+                                zIndex: 2,
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                            }}>
+                                {discountPercentage}% OFF
+                            </div>
+                        )}
+
                         {/* Like Button */}
                         <button onClick={(e) => { e.stopPropagation(); toggleLike(item); }} style={{ position: "absolute", top: "10px", right: "10px", background: "white", border: "none", borderRadius: "50%", padding: "6px", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", cursor: "pointer", zIndex: 2 }}>
                            <Heart size={16} color={isLiked ? COLORS.primary : "#ccc"} fill={isLiked ? COLORS.primary : "none"} />
@@ -246,7 +271,6 @@ const CatalogPage = () => {
                         {/* Content */}
                         <div onClick={() => navigate(`/product/${item.id}`)} style={{ cursor: "pointer", height: "100%", display: "flex", flexDirection: "column" }}>
                             
-                            {/* --- MENGGUNAKAN LAZY IMAGE DI SINI --- */}
                             <LazyImage 
                                 src={item.image_url} 
                                 alt={item.name} 
@@ -260,17 +284,34 @@ const CatalogPage = () => {
                                 }}>
                                     {item.name}
                                 </div>
-                                <div style={{ display: "flex", justifyContent: "space-between" }}>
-                                    <div style={{ color: COLORS.primary, fontWeight: "bold", fontSize: "0.95rem", marginBottom: "4px" }}>
-                                        {formatRupiah(item.price)}
+                                
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                                    
+                                    {/* --- TAMPILAN HARGA DENGAN DISKON (UPDATED) --- */}
+                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                        {hasDiscount ? (
+                                            <>
+                                                <div style={{ fontSize: "0.7rem", textDecoration: "line-through", color: "#999", marginBottom: "0px" }}>
+                                                    {formatRupiah(item.price)}
+                                                </div>
+                                                <div style={{ color: COLORS.primary, fontWeight: "bold", fontSize: "0.95rem" }}>
+                                                    {formatRupiah(item.discount_price)}
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <div style={{ color: COLORS.primary, fontWeight: "bold", fontSize: "0.95rem", marginBottom: "2px" }}>
+                                                {formatRupiah(item.price)}
+                                            </div>
+                                        )}
                                     </div>
-                                    <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.75rem", color: "#888" }}>
+
+                                    <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.75rem", color: "#888", marginBottom: "4px" }}>
                                         <div style={{ display: "flex", alignItems: "center", gap: "2px" }}>
-                                            <Star size={12} fill="#fbbf24" color="#fbbf24" /> 
+                                            <Star size={10} fill="#fbbf24" color="#fbbf24" /> 
                                             <span style={{ color: "#333", fontWeight: "600" }}>{item.rating || 4.5}</span>
                                         </div>
                                         <div style={{ width: "1px", height: "10px", background: "#ddd" }}></div>
-                                        <div>{item.sold_count || 0} Terjual</div>
+                                        <div style={{ fontSize: "0.7rem" }}>{item.sold_count || 0} Terjual</div>
                                     </div>
                                 </div>
                             </div>
